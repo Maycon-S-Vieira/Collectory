@@ -29,9 +29,11 @@ class _SobreViewState extends State<SobreView> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              'Criado e desenvolvido por Maycon Silva Vieira',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 25),
+              'Projeto criado como prototipo para TCC, com o objetivo de catalogar e gerenciar coleções'
+              ' de usuarios e colecionadores de livros, mangás e HQs.\n\n'
+              'Criado e desenvolvido por Maycon Silva Vieira.',
+              textAlign: TextAlign.justify,
+              style: TextStyle(fontSize: 25, height: 1.5),
             ),
           ),
           const Spacer(flex: 5),
