@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       //
       //Navegação
       //
-      initialRoute: 'sobre',
+      initialRoute: 'login',
       routes: {
         'cadastro': (context) => const CadastroView(),
         'iniciar': (context) => const IniView(),
