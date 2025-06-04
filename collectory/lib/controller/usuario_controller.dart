@@ -134,6 +134,7 @@ class UsuarioController extends ChangeNotifier {
     }
   }
 
+  //Função para limpar os campos do cadastro
   void limparCampos() {
     Nome.clear();
     Email.clear();
