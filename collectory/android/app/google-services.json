@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "347771825200",
+    "project_id": "collectory-98647",
+    "storage_bucket": "collectory-98647.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347771825200:android:04347f6638135c747f91f5",
+        "android_client_info": {
+          "package_name": "com.example.collectory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZQedJpjPYtJ5hJMS3t7AthV5-dvnMn7Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

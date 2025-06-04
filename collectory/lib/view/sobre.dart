@@ -1,7 +1,6 @@
+import 'package:collectory/controller/usuario_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-
-import '../controller/collectory_controller.dart';
 
 class SobreView extends StatefulWidget {
   const SobreView({super.key});
@@ -11,7 +10,7 @@ class SobreView extends StatefulWidget {
 }
 
 class _SobreViewState extends State<SobreView> {
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final ctrl = GetIt.I.get<UsuarioController>();
 
   @override
   void initState() {

@@ -1,10 +1,10 @@
-import 'package:collectory/controller/collectory_controller.dart';
+import 'package:collectory/controller/usuario_controller.dart';
+import 'package:collectory/controller/itens_controller.dart';
 import 'package:collectory/view/cadastro.dart';
 import 'package:collectory/view/login.dart';
 import 'package:collectory/view/tela_inicial.dart';
 import 'package:collectory/view/add_itens.dart';
 import 'package:collectory/view/configuracoes.dart';
-import 'package:collectory/view/excluir_itens.dart';
 import 'package:collectory/view/filtros.dart';
 import 'package:collectory/view/informacoes.dart';
 import 'package:collectory/view/perfil.dart';
@@ -14,12 +14,19 @@ import 'package:collectory/view/visualizar_colecao.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:collectory/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 final g = GetIt.instance;
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  g.registerSingleton<CollectoryController>(CollectoryController());
+  g.registerSingleton<UsuarioController>(UsuarioController());
+  g.registerSingleton<ItemController>(ItemController());
 
   runApp(DevicePreview(builder: (context) => const MyApp()));
 }
@@ -46,10 +53,10 @@ class MyApp extends StatelessWidget {
         'configuracoes': (context) => const ConfiguracoesView(),
         'filtros': (context) => const FiltrosView(),
         'informacoes': (context) => const InformacoesView(),
-        'excluir_itens': (context) => const ExcluirView(),
         'add_itens': (context) => const Add_Itens_View(),
         'sobre': (context) => const SobreView(),
         'visualizar': (context) => const Visualizar_Colecao_View(),
+        'editar_item': (context) => const Add_Itens_View(),
       },
     );
   }

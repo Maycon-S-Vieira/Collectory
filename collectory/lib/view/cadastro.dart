@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../controller/collectory_controller.dart';
+import '../controller/usuario_controller.dart';
 
 class CadastroView extends StatefulWidget {
   const CadastroView({super.key});
@@ -11,7 +11,7 @@ class CadastroView extends StatefulWidget {
 }
 
 class _CadastroViewState extends State<CadastroView> {
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final ctrl = GetIt.I.get<UsuarioController>();
   String? senhaErro;
 
   @override
@@ -22,7 +22,7 @@ class _CadastroViewState extends State<CadastroView> {
 
   void validarSenhas(){
     setState((){
-      if(ctrl.Senha.text != ctrl.SenhaConfirma.text){
+      if(ctrl.Senha.text != ctrl.ConfirmaSenha.text){
         senhaErro = "As senhas precisam ser iguais!";
       }else{
         senhaErro = null;
@@ -58,7 +58,7 @@ class _CadastroViewState extends State<CadastroView> {
             ),
             TextFormField(
               obscureText: true,
-              controller: ctrl.SenhaConfirma,
+              controller: ctrl.ConfirmaSenha,
               decoration: InputDecoration(labelText: 'Confirmar senha'),
               onChanged: (_) => validarSenhas(),
             ),
@@ -72,8 +72,7 @@ class _CadastroViewState extends State<CadastroView> {
               ),
             SizedBox(height: 40),
             ElevatedButton(onPressed: senhaErro == null? () {
-              ctrl.Add_Usuarios();
-              Navigator.pop(context);
+              ctrl.criarConta(context);
             } : null, 
             child: Text('Cadastrar')),
           ],

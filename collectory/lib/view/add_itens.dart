@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import '../model/item_model.dart';
 
-import '../controller/collectory_controller.dart';
+import '../controller/itens_controller.dart';
 
 class Add_Itens_View extends StatefulWidget {
   const Add_Itens_View({super.key});
@@ -14,7 +15,35 @@ enum SingingCharacter { Manga, HQ, Livro }
 
 class _Add_Itens_ViewState extends State<Add_Itens_View> {
   SingingCharacter? _character = SingingCharacter.Manga;
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final ctrl = GetIt.I.get<ItemController>();
+
+  Itens? itemSelecionado;
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final args = ModalRoute.of(context)!.settings.arguments;
+    if (args is Itens) {
+      itemSelecionado = args;
+
+      ctrl.Titulo.text = itemSelecionado!.titulo;
+      ctrl.Autor.text = itemSelecionado!.autor;
+      ctrl.Editora.text = itemSelecionado!.editora;
+      ctrl.Volume.text = itemSelecionado!.volume.toString();
+      ctrl.Preco.text = itemSelecionado!.preco.toString();
+      ctrl.Modelo.text = itemSelecionado!.modelo;
+
+      _character = SingingCharacter.values.firstWhere(
+        (e) => e.name == itemSelecionado!.modelo,
+        orElse: () => SingingCharacter.Manga,
+      );
+    } else {
+      _character = SingingCharacter.Manga;
+      ctrl.Modelo.text = _character!.name;
+    }
+
+    ctrl.addListener(() => setState(() {}));
+  }
 
   @override
   void initState() {
@@ -25,8 +54,10 @@ class _Add_Itens_ViewState extends State<Add_Itens_View> {
 
   @override
   Widget build(BuildContext context) {
+    final isEdicao = itemSelecionado != null;
+
     return Scaffold(
-      appBar: AppBar(title:Text('Adicionar Itens')),
+      appBar: AppBar(title: Text(isEdicao ? 'Editar Item' : 'Adicionar Item')),
       body: Padding(
         padding: EdgeInsets.all(30),
         child: Column(
@@ -98,19 +129,15 @@ class _Add_Itens_ViewState extends State<Add_Itens_View> {
             ),
             SizedBox(height: 40),
             ElevatedButton(onPressed: () {
-              final sucesso = ctrl.Add_Itens();
-              if(!sucesso){
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("Erro: Volume ou Preço inválido."),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              }else{
-                Navigator.pop(context);
-              }
-            }, child: Text('Cadastrar')),
+              if (isEdicao) {
+                  ctrl.atualizarItem(itemSelecionado!);
+                  Navigator.pop(context);
+                } else {
+                  ctrl.adicionarItem(context);
+                }
+              },
+              child: Text(isEdicao ? 'Atualizar' : 'Cadastrar'),
+            ),
           ],
         ),
       ),

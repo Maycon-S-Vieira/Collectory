@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../controller/collectory_controller.dart';
+import '../controller/usuario_controller.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -11,18 +11,18 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final usuarioCtrl = GetIt.I.get<UsuarioController>();
   String? erroMessage;
 
   @override
   void initState() {
     super.initState();
-    ctrl.addListener(() => setState(() {}));
+  usuarioCtrl.addListener(() => setState(() {}));
   }
 
-  void login(){
-    if(ctrl.verificaUsuario()){
-      ctrl.gravaPerfilLogado();
+  void login() async{
+    final sucesso = await usuarioCtrl.login(context);
+    if(sucesso){
       Navigator.pushNamed(context, 'iniciar');
     }else{
       setState(() {
@@ -46,11 +46,11 @@ class _LoginViewState extends State<LoginView> {
           ),
           SizedBox(height: 40),
             TextField(
-              controller: ctrl.Email,
+              controller: usuarioCtrl.Email,
               decoration: InputDecoration(labelText: 'E-mail'),
             ),
             TextField(
-              controller: ctrl.Senha,
+              controller: usuarioCtrl.Senha,
               obscureText: true,
               decoration: InputDecoration(labelText: 'Senha'),
             ),
@@ -73,7 +73,7 @@ class _LoginViewState extends State<LoginView> {
 
 class LoginButtons extends StatelessWidget {
   final VoidCallback onLogin;
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final usuarioCtrl = GetIt.I.get<UsuarioController>();
 
   LoginButtons({required this.onLogin});
 
@@ -119,7 +119,7 @@ class LoginButtons extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            ctrl.limpar_variaveis();
+            usuarioCtrl.limparCampos();
             Navigator.pushNamed(context, 'cadastro');
           },
           style: TextButton.styleFrom(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../controller/collectory_controller.dart';
+import '../controller/itens_controller.dart';
 
 class InformacoesView extends StatefulWidget {
   const InformacoesView({super.key});
@@ -11,7 +11,7 @@ class InformacoesView extends StatefulWidget {
 }
 
 class _InformacoesViewState extends State<InformacoesView> {
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final ctrl = GetIt.I.get<ItemController>();
 
   @override
   void initState() {

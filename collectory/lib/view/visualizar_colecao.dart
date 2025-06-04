@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../controller/collectory_controller.dart';
+import '../controller/itens_controller.dart';
+import '../controller/usuario_controller.dart';
 import '../model/item_model.dart';
 
 class Visualizar_Colecao_View extends StatefulWidget {
@@ -12,24 +13,89 @@ class Visualizar_Colecao_View extends StatefulWidget {
 }
 
 class _Visualizar_Colecao_ViewState extends State<Visualizar_Colecao_View> {
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final itemCtrl = GetIt.I.get<ItemController>();
+  final usuarioCtrl = GetIt.I.get<UsuarioController>();
+
+  String? tituloColecao;
+  List<Itens> itens = [];
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    itemCtrl.addListener(() => setState(() {}));
+
+    // Recebe título da coleção via argumentos da rota
+    final args = ModalRoute.of(context)!.settings.arguments;
+    if (args is List<Itens> && args.isNotEmpty) {
+      itens = args;
+      tituloColecao = itens[0].titulo;
+      itemCtrl.buscarStatusColecaoCompleta(tituloColecao!);
+    }
+  }
+
+  /*@override
   void initState() {
     super.initState();
-    ctrl.addListener(() => setState(() {}));
-  }
+    itemCtrl.addListener(() => setState(() {}));
+
+    final itens = ModalRoute.of(context)!.settings.arguments as List<Itens>;
+    if (itens.isNotEmpty) {
+      final titulo = itens[0].titulo;
+      itemCtrl.buscarStatusColecaoCompleta(titulo);
+    }
+  }*/
 
   @override
   Widget build(BuildContext context) {
+    if (tituloColecao == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Coleção')),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final completa = itemCtrl.isColecaoCompleta(tituloColecao!);
 
     final itens = ModalRoute.of(context)!.settings.arguments as List<Itens>;
 
+    final valorTotal = itens.fold<double>(0.0, (soma, item) => soma + item.preco);
+
     return Scaffold(
-      appBar: AppBar(title: Text('Visualizar Coleção')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: visualizarLista(itens),
+      appBar: AppBar(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$tituloColecao'),
+          Text(
+            'Total: R\$ ${valorTotal.toStringAsFixed(2)}',
+            style: TextStyle(fontSize: 14, color: const Color.fromARGB(255, 0, 0, 0)),
+          ),
+        ],
+      ),
+    ),
+      body: Column(
+        children: [
+          // Botão para alternar status coleção completa
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GestureDetector(
+              onTap: () async {
+                await itemCtrl.toggleColecaoCompleta(tituloColecao!);
+              },
+              child: Chip(
+                label: Text(
+                  completa ? 'Completa' : 'Incompleta',
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: completa ? Colors.green : Colors.red,
+              ),
+            ),
+          ),
+          Expanded(
+           child: visualizarLista(itens),
+          ),
+        ],
       ),
     );
   }
@@ -49,11 +115,47 @@ class _Visualizar_Colecao_ViewState extends State<Visualizar_Colecao_View> {
               'Preço: R\$ ${colecao.preco.toStringAsFixed(2)}\n'
               'Modelo: ${colecao.modelo}',
             ),
-            trailing: IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'excluir_itens');
-              },
-              icon: Icon(Icons.delete_outline),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      'editar_item',
+                      arguments: colecao,
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete_outline),
+                  onPressed: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: Text('Excluir Item'),
+                        content: Text('Tem certeza que deseja excluir este volume?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text('Cancelar'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: Text('Excluir'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm ?? false) {
+                      final usuarioUid = usuarioCtrl.idUsuario();
+                      await itemCtrl.excluirItem(usuarioUid.toString(), colecao.titulo, colecao.volume);
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         );

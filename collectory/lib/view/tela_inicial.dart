@@ -1,6 +1,9 @@
-import 'package:collectory/controller/collectory_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+
+import '../controller/usuario_controller.dart';
+import '../controller/itens_controller.dart';
+import '../model/item_model.dart';
 
 class IniView extends StatefulWidget {
   const IniView({super.key});
@@ -10,13 +13,24 @@ class IniView extends StatefulWidget {
 }
 
 class _IniViewState extends State<IniView> {
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final usuarioCtrl = GetIt.I.get<UsuarioController>();
+  final itemCtrl = GetIt.I.get<ItemController>();
+
+  final List<String> colecoes = ['Manga', 'HQ', 'Livro'];
 
   @override
   void initState() {
     super.initState();
-    ctrl.limpar_variaveis();
-    ctrl.addListener(() => setState(() {}));
+
+    usuarioCtrl.limparCampos();
+    usuarioCtrl.addListener(() => setState(() {}));
+
+    itemCtrl.addListener(() => setState(() {}));
+    itemCtrl.iniciarListenerItens();
+
+    for (var c in colecoes) {
+      itemCtrl.buscarStatusColecaoCompleta(c);
+    }
   }
 
   @override
@@ -26,15 +40,14 @@ class _IniViewState extends State<IniView> {
         title: Text('Home'),
           actions: [
             IconButton(onPressed: (){
-              ctrl.limpar_variaveis();
-              Navigator.pushNamedAndRemoveUntil(context, 
-              'login', (Route<dynamic>route) => false);
+              usuarioCtrl.limparCampos();
+              Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
             }, 
             icon: Icon(Icons.exit_to_app_outlined)),
           ],
         ),
       body: Padding(
-        padding: EdgeInsets.all(30),
+        padding: const EdgeInsets.all(30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -68,8 +81,8 @@ class _IniViewState extends State<IniView> {
               ],
             ),
 
-            if(ctrl.verificaItens())
-              ctrl.visualizarItens ? visualizarItens() : visualizarGrid(),
+            if(itemCtrl.temItens)
+              visualizarItens(itemCtrl.itens),
             
             const Spacer(),
             Row(
@@ -100,7 +113,66 @@ class _IniViewState extends State<IniView> {
     );
   }
 
-  Widget visualizarItens() {
+  Widget visualizarItens(List<Itens> itens) {
+    final mapaTitulos = <String, int>{};
+    for (var item in itens) {
+      mapaTitulos[item.titulo] = (mapaTitulos[item.titulo] ?? 0) + 1;
+    }
+
+    final titulosUnicos = mapaTitulos.entries.toList();
+
+    return Expanded(
+      child: ListView.builder(
+        itemCount: titulosUnicos.length,
+        itemBuilder: (context, index) {
+          final item = titulosUnicos[index];
+          final statusCompleto = itemCtrl.colecoesCompletas[item.key] ?? false;
+          return Card(
+            child: ListTile(
+              title: Text(item.key),
+              subtitle: Text(
+                'Volumes: ${item.value}\n'
+                'Coleção Completa? ${statusCompleto ? 'Sim' : 'Não'}'
+              ),
+              onTap: () {
+                final itensSelecionados = itens.where((e) => e.titulo == item.key).toList();
+                Navigator.pushNamed(context, 'visualizar', arguments: itensSelecionados);
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget visualizarGrid(List<Itens> itens) {
+    final mapaTitulos = <String, int>{};
+    for (var item in itens) {
+      mapaTitulos[item.titulo] = (mapaTitulos[item.titulo] ?? 0) + 1;
+    }
+
+    final titulosUnicos = mapaTitulos.entries.toList();
+
+    return Expanded(
+      child: GridView.builder(
+        itemCount: titulosUnicos.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ),
+        itemBuilder: (context, index) {
+          final item = titulosUnicos[index];
+          return Card(
+            child: ListTile(
+              title: Text(item.key),
+              subtitle: Text('Volumes: ${item.value}\nColeção Completa?'),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /*Widget visualizarItens() {
     Map<String, int> mapaTitulos = {};
 
     for(var item in ctrl.itens){
@@ -170,7 +242,7 @@ class _IniViewState extends State<IniView> {
         },
       ),
     );
-  }
+  }*/
 }
 
 

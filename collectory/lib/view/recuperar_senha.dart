@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../controller/collectory_controller.dart';
+import '../controller/usuario_controller.dart';
 
 class RecuperarView extends StatefulWidget {
   const RecuperarView({super.key});
@@ -11,12 +11,12 @@ class RecuperarView extends StatefulWidget {
 }
 
 class _RecuperarViewState extends State<RecuperarView> {
-  final ctrl = GetIt.I.get<CollectoryController>();
+  final ctrl = GetIt.I.get<UsuarioController>();
 
   @override
   void initState() {
     super.initState();
-    ctrl.limpar_variaveis();
+    ctrl.EmailEsqueceuSenha.clear();;
     ctrl.addListener(() => setState(() {}));
   }
 
@@ -30,48 +30,20 @@ class _RecuperarViewState extends State<RecuperarView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: ctrl.Email,
+              controller: ctrl.EmailEsqueceuSenha,
               decoration: const InputDecoration(
                 labelText: 'Digite seu e-mail',
                 border: OutlineInputBorder(),
               ),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                final senha = ctrl.recuperarSenhaPorEmail(ctrl.Email.text);
-                if (senha != null) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Senha Recuperada'),
-                      content: Text('Sua senha é: $senha'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('OK'),
-                        )
-                      ],
-                    ),
-                  );
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Erro'),
-                      content: const Text('E-mail não encontrado.'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('OK'),
-                        )
-                      ],
-                    ),
-                  );
-                }
+                ctrl.esqueceuSenha(context); // chama a função corretamente
               },
-              child: const Text('Recuperar Senha'),
-            )
+              child: const Text('Enviar E-mail de Recuperação'),
+            ),
           ],
         ),
       ),
