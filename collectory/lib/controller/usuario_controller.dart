@@ -134,6 +134,21 @@ class UsuarioController extends ChangeNotifier {
     }
   }
 
+  Future<void> atualizarPerfil(BuildContext context) async {
+    final user = auth.currentUser;
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).update({
+          'nome': Nome.text.trim(),
+          'telefone': Telefone.text.trim(),
+        });
+        sucesso(context, 'Perfil atualizado com sucesso!');
+      } catch (e) {
+        erro(context, 'Erro ao atualizar perfil: $e');
+      }
+    }
+  }
+
   //Função para limpar os campos do cadastro
   void limparCampos() {
     Nome.clear();
