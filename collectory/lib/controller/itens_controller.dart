@@ -3,7 +3,6 @@ import '../model/item_model.dart';
 import '../controller/usuario_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class ItensComId {
   final String id;
