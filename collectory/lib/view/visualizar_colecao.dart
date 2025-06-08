@@ -34,18 +34,6 @@ class _Visualizar_Colecao_ViewState extends State<Visualizar_Colecao_View> {
     }
   }
 
-  /*@override
-  void initState() {
-    super.initState();
-    itemCtrl.addListener(() => setState(() {}));
-
-    final itens = ModalRoute.of(context)!.settings.arguments as List<Itens>;
-    if (itens.isNotEmpty) {
-      final titulo = itens[0].titulo;
-      itemCtrl.buscarStatusColecaoCompleta(titulo);
-    }
-  }*/
-
   @override
   Widget build(BuildContext context) {
     if (tituloColecao == null) {
